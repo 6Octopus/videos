@@ -1,7 +1,46 @@
 const mongoose = require('mongoose');
 
-const mongoUri = 'mongodb://localhost:27017/videos';
+mongoose.Promise = global.Promise;
 
-const db = mongoose.connect(mongoUri, { useMongoClient: true });
+const mongoUri = 'mongodb://localhost/videos';
 
-module.exports = db;
+mongoose.connect(mongoUri, { useMongoClient: true });
+
+const Snippet = mongoose.model('snippet', {
+  _id: String,
+  publishedAt: Date,
+  channelId: String,
+  title: String,
+  description: String,
+  thumbnails: {
+    default: {
+      url: String,
+    },
+  },
+  tags: [String],
+  categoryId: String,
+});
+
+const ContentDetails = mongoose.model('contentDetails', {
+  _id: String,
+  duration: String,
+});
+
+const Statistics = mongoose.model('statistics', {
+  _id: String,
+  viewCount: String,
+});
+
+const TopicDetails = mongoose.model('topicDetails', {
+  _id: String,
+  relevantTopicIds: [String],
+  topicCategories: [String],
+});
+
+module.exports = {
+  mongoose,
+  Snippet,
+  ContentDetails,
+  Statistics,
+  TopicDetails,
+};
