@@ -1,9 +1,9 @@
-const videos = require('./videos');
-const video = require('./video');
-const views = require('./views');
+const list = require('./list');
+const insert = require('./insert');
+const update = require('./update');
 
 module.exports = {
-  videos,
-  video,
-  views,
+  list,
+  insert,
+  update,
 };

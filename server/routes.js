@@ -1,10 +1,10 @@
 const router = require('express').Router();
 const model = require('./models/index.js');
 
-router.get('/videos', model.videos);
+router.get('/videos', model.list);
 
-router.post('/video', model.video);
+router.post('/videos', model.insert);
 
-router.post('/views', model.views);
+router.put('/videos', model.update);
 
 module.exports = router;
