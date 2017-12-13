@@ -84,6 +84,7 @@ const list = function videosGetRoute(req, res) {
             const pt = data[i][j];
             delete pt.__order;
             delete pt._id;
+            delete pt.__v;
             item[part] = data[i][j];
           });
           response.Items.push(item);
