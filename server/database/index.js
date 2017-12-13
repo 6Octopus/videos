@@ -17,7 +17,7 @@ const Snippet = mongoose.model('snippet', {
       url: String,
     },
   },
-  tags: [String],
+  tags: [{ type: String }],
   categoryId: String,
 });
 
@@ -33,8 +33,8 @@ const Statistics = mongoose.model('statistics', {
 
 const TopicDetails = mongoose.model('topicDetails', {
   _id: String,
-  relevantTopicIds: [String],
-  topicCategories: [String],
+  relevantTopicIds: [{ type: String }],
+  topicCategories: [{ type: String }],
 });
 
 module.exports = {
