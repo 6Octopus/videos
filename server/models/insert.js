@@ -1,3 +1,4 @@
+const axios = require('axios');
 const db = require('../database/index.js');
 
 const insert = function videoPostRoute(req, res) {
@@ -11,7 +12,15 @@ const insert = function videoPostRoute(req, res) {
     topicCategories: [],
   });
   Promise.all(inserts)
-    .then(() => res.end());
+    .then(() => {
+      if (process.env.ENTRY_URL) {
+        axios.post(`http://${process.env.ENTRY_URL}`, { id: req.body.video._id });
+      }
+      if (process.env.RELATED_URL) {
+        axios.post(`http://${process.env.RELATED_URL}`, { id: req.body.video._id });
+      }
+      res.end();
+    });
 };
 
 module.exports = insert;
