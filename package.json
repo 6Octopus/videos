@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/6Octopus/videos#readme",
   "dependencies": {
+    "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",
     "mongoose": "^4.13.7"
