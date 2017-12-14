@@ -5,6 +5,6 @@ router.get('/videos', model.list);
 
 router.post('/videos', model.insert);
 
-router.put('/videos', model.update);
+router.put('/videos/views', model.update.views);
 
 module.exports = router;
