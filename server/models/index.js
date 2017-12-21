@@ -1,9 +1,9 @@
 const list = require('./list');
 const insert = require('./insert');
-const update = require('./update');
+const { views } = require('./update');
 
 module.exports = {
   list,
   insert,
-  update,
+  views,
 };

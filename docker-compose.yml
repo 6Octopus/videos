@@ -1,0 +1,30 @@
+version: "2"
+services:
+  app:
+    build:
+      context: .
+    links:
+      - mongo
+      - statsd
+    environment:
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID
+      - VIDEOS_QUEUE_URL
+      - ENTRY_QUEUE_URL
+      - RELATED_QUEUE_URL
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+  statsd:
+    image: hopsoft/graphite-statsd
+    ports:
+      - "3002:80"
+      - "2003:2003"
+      - "8125:8125/udp"
+  grafana:
+    image: grafana/grafana
+    links:
+      - statsd
+    ports:
+      - "3001:3000"
