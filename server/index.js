@@ -40,9 +40,8 @@ const processMessage = function processMessagesToModels(message) {
           if (message.id !== 0) {
             sendParams.MessageBody = JSON.stringify({ id: message.id, data });
             sendParams.QueueUrl = message.resUrl;
-            sqs.sendMessage(sendParams, (err, res) => {
+            sqs.sendMessage(sendParams, (err) => {
               if (err) console.log(err);
-              else console.log(res);
             });
           }
         })
@@ -82,7 +81,6 @@ const processMessage = function processMessagesToModels(message) {
 const receive = function receiveFromQueue() {
   return new Promise((resolve, reject) => {
     sqs.receiveMessage(receiveParams, (err, data) => {
-      console.log(data);
       if (err) {
         console.log('Error: ', err);
         reject();
@@ -106,9 +104,8 @@ const receive = function receiveFromQueue() {
           deleteBatchParams.Entries.push(deleteParams);
         });
 
-        sqs.deleteMessageBatch(deleteBatchParams, (err, res) => {
-          if (err) console.log(err);
-          // else console.log(res);
+        sqs.deleteMessageBatch(deleteBatchParams, (error) => {
+          if (err) console.log(error);
         });
 
         resolve();
