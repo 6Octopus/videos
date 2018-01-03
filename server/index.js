@@ -4,9 +4,9 @@ const https = require('https');
 
 const model = require('./models/index.js');
 
-const statsd = new StatsD({ host: 'statsd', port: 8125 });
+const statsd = new StatsD({ host: process.env.STATSD_URL, port: 8125 });
 
-const agent = new https.Agent({ maxSockets: 99999 });
+const agent = new https.Agent({ maxSockets: 999 });
 AWS.config.update({ region: 'us-west-1', httpOptions: { agent } });
 
 const sqs = new AWS.SQS({ apiVersion: '2012-11-05' });
@@ -37,19 +37,24 @@ const processMessage = function processMessagesToModels(message) {
     if (message.method === 'GET') {
       return model.list(message.data)
         .then((data) => {
-          sendParams.MessageBody = JSON.stringify({ id: message.id, data });
-          sendParams.QueueUrl = message.resUrl;
-          sqs.sendMessage(sendParams, (err) => {
-            if (err) console.log(err);
-          });
+          if (message.id !== 0) {
+            sendParams.MessageBody = JSON.stringify({ id: message.id, data });
+            sendParams.QueueUrl = message.resUrl;
+            sqs.sendMessage(sendParams, (err, res) => {
+              if (err) console.log(err);
+              else console.log(res);
+            });
+          }
         })
         .catch((data) => {
-          sendParams.MessageBody = JSON.stringify({ id: message.id, data });
-          sendParams.QueueUrl = message.resUrl;
-          sqs.sendMessage(sendParams, (err, res) => {
-            if (err) console.log(err);
-            else console.log(res);
-          });
+          if (message.id !== 0) {
+            sendParams.MessageBody = JSON.stringify({ id: message.id, data });
+            sendParams.QueueUrl = message.resUrl;
+            sqs.sendMessage(sendParams, (err, res) => {
+              if (err) console.log(err);
+              else console.log(res);
+            });
+          }
         });
     } else if (message.method === 'POST') {
       return model.insert(message.data)
@@ -75,38 +80,55 @@ const processMessage = function processMessagesToModels(message) {
 };
 
 const receive = function receiveFromQueue() {
-  sqs.receiveMessage(receiveParams, (err, data) => {
-    if (err) {
-      console.log('Error: ', err);
-      receive();
-    } else if (data.Messages) {
-      const deleteBatchParams = {
-        Entries: [],
-        QueueUrl,
-      };
-
-      data.Messages.forEach((message) => {
-        const deleteParams = {
-          Id: message.MessageId,
-          ReceiptHandle: message.ReceiptHandle,
+  return new Promise((resolve, reject) => {
+    sqs.receiveMessage(receiveParams, (err, data) => {
+      console.log(data);
+      if (err) {
+        console.log('Error: ', err);
+        reject();
+      } else if (data.Messages) {
+        const deleteBatchParams = {
+          Entries: [],
+          QueueUrl,
         };
 
-        const start = new Date();
-        processMessage(JSON.parse(message.Body))
-          .then(() => statsd.timing('response_time', new Date() - start));
+        data.Messages.forEach((message) => {
+          const deleteParams = {
+            Id: message.MessageId,
+            ReceiptHandle: message.ReceiptHandle,
+          };
 
-        deleteBatchParams.Entries.push(deleteParams);
-      });
+          const start = new Date();
+          processMessage(JSON.parse(message.Body))
+            .then(() => statsd.timing('response_time', new Date() - start))
+            .catch(() => statsd.timing('response_time', new Date() - start));
 
-      sqs.deleteMessageBatch(deleteBatchParams);
+          deleteBatchParams.Entries.push(deleteParams);
+        });
 
-      receive();
-    } else {
-      receive();
-    }
+        sqs.deleteMessageBatch(deleteBatchParams, (err, res) => {
+          if (err) console.log(err);
+          // else console.log(res);
+        });
+
+        resolve();
+      } else {
+        resolve();
+      }
+    });
   });
 };
 
-for (let i = 0; i < 1; i += 1) {
-  setTimeout(() => receive(), 0);
+// setInterval(() => {
+//   statsd.timing('response_time', 100);
+// }, 1);
+
+const wrapper = async function recieveWrapper() {
+  while (true) {
+    await receive();
+  }
+};
+
+for (let i = 0; i < 10; i += 1) {
+  setTimeout(() => wrapper(), 0);
 }
