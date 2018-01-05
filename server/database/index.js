@@ -2,7 +2,8 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-const mongoUri = 'mongodb://mongo:27017/videos';
+const mongoUri = `mongodb://${process.env.MONGO_URL}:27017/videos`;
+// const mongoUri = 'mongodb://mongo:27017/videos';
 // const mongoUri = 'mongodb://localhost:27017/videos';
 
 mongoose.connect(mongoUri, { useMongoClient: true });

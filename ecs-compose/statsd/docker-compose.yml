@@ -1,0 +1,18 @@
+version: "2"
+services:
+  statsd:
+    image: hopsoft/graphite-statsd
+    network_mode: bridge
+    ports:
+      - "3002:80"
+      - "2003:2003"
+      - "8125:8125/udp"
+    mem_limit: 512m
+  grafana:
+    image: grafana/grafana
+    network_mode: bridge
+    links:
+      - statsd
+    ports:
+      - "3001:3000"
+    mem_limit: 256m

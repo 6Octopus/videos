@@ -6,12 +6,16 @@ services:
     links:
       - mongo
       - statsd
+      - redis
     environment:
       - AWS_SECRET_ACCESS_KEY
       - AWS_ACCESS_KEY_ID
       - VIDEOS_QUEUE_URL
       - ENTRY_QUEUE_URL
       - RELATED_QUEUE_URL
+      - MONGO_URL
+      - STATSD_URL
+      - REDIS_URL
   mongo:
     image: mongo
     ports:
@@ -28,3 +32,7 @@ services:
       - statsd
     ports:
       - "3001:3000"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

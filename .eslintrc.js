@@ -14,6 +14,7 @@ module.exports = {
   },
 
   rules: {
-    "no-underscore-dangle": ["error", { "allow": ["_id", "__order", "__v"] }]
+    "no-underscore-dangle": ["error", { "allow": ["_id", "__order", "__v"] }],
+    "no-await-in-loop": "off",
   },
 };

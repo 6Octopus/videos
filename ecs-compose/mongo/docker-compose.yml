@@ -1,0 +1,12 @@
+version: "2"
+services:
+  mongo:
+    image: mongo
+    network_mode: bridge
+    ports:
+      - "27017:27017"
+    expose:
+        - "27017"
+    volumes:
+        - /opt/data/mongo_home:/data/db
+    restart: always

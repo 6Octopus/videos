@@ -1,0 +1,18 @@
+version: "2"
+services:
+  app:
+    image: 942892812241.dkr.ecr.us-west-1.amazonaws.com/videos:latest
+    network_mode: bridge
+    external_links:
+      - ecs-mongo-4-mongo-eae4bb86f2e1a9e8ee01:mongo
+      - ecs-statsd-2-statsd-d2beffd7e4e79bbdad01:statsd
+      - ecs-redis-1-redis-86aafacefacbb0ee6900:redis
+    environment:
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID
+      - VIDEOS_QUEUE_URL
+      - ENTRY_QUEUE_URL
+      - RELATED_QUEUE_URL
+      - MONGO_URL
+      - STATSD_URL
+      - REDIS_URL
