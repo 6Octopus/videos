@@ -15,6 +15,7 @@ services:
       - RELATED_QUEUE_URL
       - MONGO_URL
       - STATSD_URL
+      - REDIS_URL
   mongo:
     image: mongo
     ports:
@@ -34,4 +35,4 @@ services:
   redis:
     image: redis
     ports:
-      - "6329:6329"
+      - "6379:6379"
